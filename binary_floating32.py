@@ -5,6 +5,9 @@
     • Output: (1) binary output with space between section (2) its hexadecimal equivalent (3)
     with option to output in text file.
 '''
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from tkinter.scrolledtext import ScrolledText
 
 def checkFormat(sNum):
     ctr = 0
@@ -132,65 +135,135 @@ def binToHex(n): # binary to hex kinuha ko lang yung codeHAHAH
     hex = ''.join(convertedList)
     return hex
 
-if __name__ == '__main__':
-    print("\n--------------------------------------------------------")
-    print("Welcome to IEEE-754 Binary-32 floating point converter!")
-    print("----------------------------------------------------------")
+# if __name__ == '__main__':
+#     print("\n--------------------------------------------------------")
+#     print("Welcome to IEEE-754 Binary-32 floating point converter!")
+#     print("----------------------------------------------------------")
 
-    while True:
-        while True:
-            print("Enter base (2 or 10)")
-            nBase = int(input("-> "))
-            if nBase == 2 or nBase == 10:
-                break
+#     while True:
+#         while True:
+#             print("Enter base (2 or 10)")
+#             nBase = int(input("-> "))
+#             if nBase == 2 or nBase == 10:
+#                 break
 
-        while True:
-            print("Enter sign (0 or 1)")
-            nSign = int(input("-> "))
-            if nSign == 0 or nSign == 1:
-                break
+#         while True:
+#             print("Enter sign (0 or 1)")
+#             nSign = int(input("-> "))
+#             if nSign == 0 or nSign == 1:
+#                 break
 
-        while True:
-            print("Enter number+decimal (ex 1000.00011)")
-            sNum = str(input("-> "))  
+#         while True:
+#             print("Enter number+decimal (ex 1000.00011)")
+#             sNum = str(input("-> "))  
 
-            if nBase == 2 and checkBinary(sNum) and checkFormat(sNum):
-                break
-            if nBase == 10 and checkFormat(sNum):
-                break
+#             if nBase == 2 and checkBinary(sNum) and checkFormat(sNum):
+#                 break
+#             if nBase == 10 and checkFormat(sNum):
+#                 break
         
-        print("Enter exponent")
-        nExp = int(input())
-        break
+#         print("Enter exponent")
+#         nExp = int(input())
+#         break
 
-    # processed values
-    exponent, one = getExponent(sNum, nExp)
-    mantissa = getMantissa(sNum, one)
-    answer = joinValues(nSign, exponent, mantissa)
-    hex = binToHex(answer)
+#     # processed values
+#     exponent, one = getExponent(sNum, nExp)
+#     mantissa = getMantissa(sNum, one)
+#     answer = joinValues(nSign, exponent, mantissa)
+#     hex = binToHex(answer)
 
-    print("\n--------------------------------")
-    print("These are your inputs\n")
-    print("Base: "), nBase
-    print("Sign: ", nSign)
-    print("Number: ", sNum)
-    print("Exponent", nExp)
-    print("--------------------------------")
-    print("Sign: ", nSign)
-    print("Exponent:")
-    print("Decimal: ", exponent)
-    print("Binary: ", bin(exponent)[2:], " (", exponent, ")") # bin() converts to binary
-    print("Fraction", mantissa)
-    print("--------------------------------")
-    print("Answer in bin: ", answer)
-    print("Answer in hex: ", hex)
+#     print("\n--------------------------------")
+#     print("These are your inputs\n")
+#     print("Base: "), nBase
+#     print("Sign: ", nSign)
+#     print("Number: ", sNum)
+#     print("Exponent", nExp)
+#     print("--------------------------------")
+#     print("Sign: ", nSign)
+#     print("Exponent:")
+#     print("Decimal: ", exponent)
+#     print("Binary: ", bin(exponent)[2:], " (", exponent, ")") # bin() converts to binary
+#     print("Fraction", mantissa)
+#     print("--------------------------------")
+#     print("Answer in bin: ", answer)
+#     print("Answer in hex: ", hex)
 
     # print(bin(.75)) binary function only accepts integers
+    
+class IEEE754ConverterGUI(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("IEEE-754 Binary-32 Floating Point Converter")
+        self.geometry("400x400")
+        
+        # Inputs
+        tk.Label(self, text="Base (2 or 10):").pack()
+        self.base_entry = tk.Entry(self)
+        self.base_entry.pack()
 
+        tk.Label(self, text="Sign (0 or 1):").pack()
+        self.sign_entry = tk.Entry(self)
+        self.sign_entry.pack()
 
+        tk.Label(self, text="Number with decimal (e.g., 1000.00011):").pack()
+        self.num_entry = tk.Entry(self)
+        self.num_entry.pack()
 
+        tk.Label(self, text="Exponent:").pack()
+        self.exp_entry = tk.Entry(self)
+        self.exp_entry.pack()
 
+        # Buttons for converting and saving result to txt file
+        tk.Button(self, text="Convert", command=self.convert).pack()
+        tk.Button(self, text="Save Result", command=self.save_result).pack()
 
+        # Outputs
+        tk.Label(self, text="Output:").pack()
+        self.output_text = ScrolledText(self, height=7)
+        self.output_text.pack()
 
+    def convert(self):
+        nBase = int(self.base_entry.get())
+        nSign = int(self.sign_entry.get())
+        sNum = self.num_entry.get()
+        nExp = int(self.exp_entry.get())
 
+        if nBase == 2 and checkBinary(sNum) and checkFormat(sNum):
+            pass
+        elif nBase == 10 and checkFormat(sNum):
+            pass
+        else:
+            messagebox.showerror("Error", "Invalid input.")
+            return
 
+        exponent, one = getExponent(sNum, nExp)
+        mantissa = getMantissa(sNum, one)
+        answer = joinValues(nSign, exponent, mantissa)
+        hex = binToHex(answer)
+
+        self.show_result(nSign, exponent, mantissa, answer, hex)
+
+    def show_result(self, sign, exponent, mantissa, binary, hex):
+        self.output_text.delete(1.0, "end")
+        self.output_text.insert("end", f"Sign: {sign}\n")
+        self.output_text.insert("end", f"Exponent (Decimal): {exponent}\n")
+        self.output_text.insert("end", f"Exponent (Binary): {bin(exponent)[2:]}\n")
+        self.output_text.insert("end", f"Mantissa: {mantissa}\n")
+        self.output_text.insert("end", f"Binary: {binary}\n")
+        self.output_text.insert("end", f"hexdecimal: {hex}\n")
+
+    def save_result(self):
+        result = self.output_text.get(1.0, "end").strip()
+        if not result:
+            messagebox.showwarning("Warning", "No result to save.")
+            return
+        
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+        if file_path:
+            with open(file_path, "w") as file:
+                file.write(result)
+                messagebox.showinfo("Success", "Result saved successfully.")
+
+if __name__ == '__main__':
+    app = IEEE754ConverterGUI()
+    app.mainloop()
