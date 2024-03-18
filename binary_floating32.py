@@ -20,7 +20,11 @@ def checkFormat(sNum):
         if ctr == len(sNum)-1:
             break
         ctr += 1
-    return True
+
+    if dot == 0:
+        sNum = "".join([sNum, '.'])
+    
+    return True, sNum
 
 def checkBinary(sNum):
     ctr = 0
@@ -55,8 +59,7 @@ def getMantissa(sNum, one):
     ctr = one+1 # will only get the strings after the 1st occurence of 1
     fractional = 23
     while ctr < len(sNum):
-        if ctr < len(sNum):
-            temp.append(sNum[ctr])
+        temp.append(sNum[ctr])
         if ctr == len(sNum)-1:
             break
         ctr += 1
@@ -227,10 +230,11 @@ class IEEE754ConverterGUI(tk.Tk):
         nSign = int(self.sign_entry.get())
         sNum = self.num_entry.get()
         nExp = int(self.exp_entry.get())
+        okFormat, sNum = checkFormat(sNum)
 
-        if nBase == 2 and checkBinary(sNum) and checkFormat(sNum):
+        if nBase == 2 and checkBinary(sNum) and okFormat:
             pass
-        elif nBase == 10 and checkFormat(sNum):
+        elif nBase == 10 and okFormat:
             pass
         else:
             messagebox.showerror("Error", "Invalid input.")
