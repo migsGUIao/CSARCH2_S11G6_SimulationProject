@@ -92,51 +92,59 @@ def joinValues(sign, exponent, mantissa):
     answer = ''.join(convertedList)
     return answer
 
-# https://www.geeksforgeeks.org/python-program-to-convert-binary-to-hexadecimal/
-def binToHex(n): # binary to hex kinuha ko lang yung codeHAHAH
-    bnum = int(n)
-    temp = 0
-    mul = 1
-    list = []
-     
-    count = 1
-     
-    hexaDeciNum = ['0'] * 100
+def binToHex(answer): 
+    hexBits = []
+    hexList = []
+    hexFinal = []
 
-    i = 0
-    while bnum != 0:
-        rem = bnum % 10
-        temp = temp + (rem*mul)
+    hexConversion = {
+        "0000" : '0',
+        "0001" : '1',
+        "0010" : '2',
+        "0011" : '3',
+        "0100" : '4',
+        "0101" : '5',
+        "0110" : '6',
+        "0111" : '7',
+        "1000" : '8',
+        "1001" : '9',
+        "1010" : 'A',
+        "1011" : 'B',
+        "1100" : 'C',
+        "1101" : 'D',
+        "1110" : 'E',
+        "1111" : 'F'
+    }
 
-        if count % 4 == 0:
+    # split into 4s
+    slice = 1
+    ctr = 0
+    while ctr < len(answer):
 
-            if temp < 10:
-                hexaDeciNum[i] = chr(temp+48)
-            else:
-                hexaDeciNum[i] = chr(temp+55)
-            mul = 1
-            temp = 0
-            count = 1
-            i = i+1
-             
-        else:
-            mul = mul*2
-            count = count+1
-        bnum = int(bnum/10)
-         
-    if count != 1:
-        hexaDeciNum[i] = chr(temp+48)
-         
-    if count == 1:
-        i = i-1
-         
-    while i >= 0:
-        list.append(hexaDeciNum[i])
-        i = i-1
+        hexBits.append(answer[ctr])
 
-    convertedList = map(str, list) 
-    hex = ''.join(convertedList)
-    return hex
+        if slice == 4:
+            hexList.append(hexBits[:4])
+            del hexBits[0:4]
+            slice = 0
+
+        slice += 1
+        ctr += 1
+
+    # convert list to string
+    # convert string to hex using hexConversion dictionary
+    ctr = 0
+    while ctr < len(answer) / 4:
+        convertedList = map(str, hexList[ctr]) 
+        sBinary = ''.join(convertedList)
+        hexFinal.append(hexConversion[sBinary])
+        ctr += 1
+
+    # convert hexFinal list to string
+    convertedList = map(str, hexFinal) 
+    answer = ''.join(convertedList)
+
+    return answer
 
 # if __name__ == '__main__':
 #     print("\n--------------------------------------------------------")
@@ -235,6 +243,7 @@ class IEEE754ConverterGUI(tk.Tk):
         if nBase == 2 and checkBinary(sNum) and okFormat:
             pass
         elif nBase == 10 and okFormat:
+            #sNum = decToBin(sNum)
             pass
         else:
             messagebox.showerror("Error", "Invalid input.")
