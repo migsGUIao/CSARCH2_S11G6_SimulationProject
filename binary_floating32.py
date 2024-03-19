@@ -23,6 +23,7 @@ def checkFormat(sNum):
 
     if dot == 0:
         sNum = "".join([sNum, '.'])
+        sNum = "".join([sNum, '0'])
     
     return True, sNum
 
