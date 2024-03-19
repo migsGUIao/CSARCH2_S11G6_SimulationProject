@@ -17,11 +17,7 @@ def checkFormat(sNum):
             dot += 1
         if dot > 1:
             return False, sNum
-        if ctr == len(sNum)-1:
-            break
         ctr += 1
-
-    check = sNum.index('.')
 
     # if user doesn't input decimal point,
     # add a .0 at the end
@@ -31,7 +27,7 @@ def checkFormat(sNum):
     # if the user inputs a decimal point 
     # without a number after it,
     # then add one 0
-    elif dot == 1 and check == len(sNum)-1:
+    elif dot == 1 and sNum.index('.') == len(sNum)-1:
         sNum = ''.join([sNum, '0'])
 
     return True, sNum
@@ -41,9 +37,8 @@ def checkBinary(sNum):
     while ctr < len(sNum):
         if sNum[ctr] != '0' and sNum[ctr] != '1' and sNum[ctr] != '.':
             return False
-        if ctr == len(sNum)-1:
-            break
         ctr += 1
+
     return True
 
 def getExponent(sNum, nExp):
@@ -60,7 +55,7 @@ def getExponent(sNum, nExp):
     if dot > one:
         adjust = dot - (one+1)
     elif dot < one:
-        adjust = dot - one
+        adjust = dot + one
 
     return (nExp + adjust) + 127, one
 
@@ -303,19 +298,30 @@ class IEEE754ConverterGUI(tk.Tk):
             messagebox.showerror("Error", "Invalid input.")
             return
 
-        exponent, one = getExponent(sNum, nExp)
-        mantissa = getMantissa(sNum, one)
-        answer = joinValues(nSign, exponent, mantissa)
-        hex = binToHex(answer)
+
+        if sNum != '0.0':
+            exponent, one = getExponent(sNum, nExp)
+            mantissa = getMantissa(sNum, one)
 
         # infinity
         if nExp > 127:
-            exponent = "11111111"
+            exponent = 11111111
             mantissa = "00000000000000000000000"
         
         # denormalized
         elif nExp < -126 and mantissa != "00000000000000000000000":
-            exponent = "00000000"
+            exponent = 00000000
+
+        # zero
+        elif sNum == '0.0':
+            exponent = 00000000
+            mantissa = "00000000000000000000000"
+
+        # sNaN?
+        # qNaN?
+        
+        answer = joinValues(nSign, exponent, mantissa)
+        hex = binToHex(answer)
 
         self.show_result(nSign, exponent, mantissa, answer, hex)
 
