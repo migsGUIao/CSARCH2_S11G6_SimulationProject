@@ -21,10 +21,19 @@ def checkFormat(sNum):
             break
         ctr += 1
 
+    check = sNum.index('.')
+
+    # if user doesn't input decimal point,
+    # add a .0 at the end
     if dot == 0:
-        sNum = "".join([sNum, '.'])
-        sNum = "".join([sNum, '0'])
-    
+        sNum = "".join([sNum, '.0'])
+
+    # if the user inputs a decimal point 
+    # without a number after it,
+    # then add one 0
+    elif dot == 1 and check == len(sNum)-1:
+        sNum = ''.join([sNum, '0'])
+
     return True, sNum
 
 def checkBinary(sNum):
@@ -298,6 +307,15 @@ class IEEE754ConverterGUI(tk.Tk):
         mantissa = getMantissa(sNum, one)
         answer = joinValues(nSign, exponent, mantissa)
         hex = binToHex(answer)
+
+        # infinity
+        if nExp > 127:
+            exponent = "11111111"
+            mantissa = "00000000000000000000000"
+        
+        # denormalized
+        elif nExp < -126 and mantissa != "00000000000000000000000":
+            exponent = "00000000"
 
         self.show_result(nSign, exponent, mantissa, answer, hex)
 
