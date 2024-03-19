@@ -48,8 +48,6 @@ def getExponent(sNum, nExp):
         if sNum[ctr] == '1':
             one = ctr
             break
-        if ctr == len(sNum)-1:
-            break
         ctr += 1
     
     if dot > one:
@@ -65,16 +63,12 @@ def getMantissa(sNum, one):
     fractional = 23
     while ctr < len(sNum):
         temp.append(sNum[ctr])
-        if ctr == len(sNum)-1:
-            break
         ctr += 1
 
     temp.remove('.')
     ctr = len(temp)
     while ctr < fractional:
         temp.append('0')
-        if ctr == fractional-1:
-            break
         ctr += 1
 
     # converts list to string
@@ -304,7 +298,7 @@ class IEEE754ConverterGUI(tk.Tk):
             mantissa = getMantissa(sNum, one)
 
         # infinity
-        if nExp > 127:
+        if nExp >= 127:
             exponent = 11111111
             mantissa = "00000000000000000000000"
         
