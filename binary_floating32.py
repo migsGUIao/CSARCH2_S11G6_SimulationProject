@@ -16,7 +16,7 @@ def checkFormat(sNum):
         if sNum[ctr] == '.':
             dot += 1
         if dot > 1:
-            return False
+            return False, sNum
         if ctr == len(sNum)-1:
             break
         ctr += 1
@@ -92,6 +92,51 @@ def joinValues(sign, exponent, mantissa):
     answer = ''.join(convertedList)
     return answer
 
+def decToBin(sNum):
+    # separate whole and fractional numbers
+    dot = sNum.index('.')
+    whole = sNum[:dot]
+    fractional = sNum[dot+1:]
+
+    # whole number converted to binary
+    bWhole = bin(int(whole))[2:]
+  
+    # get number of decimal places
+    dPlaces = str(len(fractional))
+    dPlaces = ''.join(['.', dPlaces])
+    dPlaces = ''.join([dPlaces, 'f'])
+
+    # convert decimal fraction to binary fraction
+    checker = int(fractional) 
+    bConverted = []
+
+    while True:
+        # fractional part multiplied by 2
+        ans = format((checker / 100) * 2, dPlaces)
+
+        # answer converted to string for processing
+        temp = str(ans)
+        dot = temp.index('.')
+
+        checker = int(temp[dot+1:])
+        res = temp[:dot]
+        bConverted.append(res)
+
+        if checker == 0:
+            break
+
+    # append '.' at the end of whole number
+    bWhole = ''.join([bWhole, '.'])
+
+    # converts binary fractional list to string
+    convertedList = map(str, bConverted) 
+    bFractional = ''.join(convertedList)
+
+    # assemble binary whole and fractional
+    binary = ''.join([bWhole, bFractional])
+    
+    return binary
+
 def binToHex(answer): 
     hexBits = []
     hexList = []
@@ -142,9 +187,9 @@ def binToHex(answer):
 
     # convert hexFinal list to string
     convertedList = map(str, hexFinal) 
-    answer = ''.join(convertedList)
+    hex = ''.join(convertedList)
 
-    return answer
+    return hex
 
 # if __name__ == '__main__':
 #     print("\n--------------------------------------------------------")
@@ -243,8 +288,7 @@ class IEEE754ConverterGUI(tk.Tk):
         if nBase == 2 and checkBinary(sNum) and okFormat:
             pass
         elif nBase == 10 and okFormat:
-            #sNum = decToBin(sNum)
-            pass
+            sNum = decToBin(sNum)
         else:
             messagebox.showerror("Error", "Invalid input.")
             return
@@ -263,7 +307,7 @@ class IEEE754ConverterGUI(tk.Tk):
         self.output_text.insert("end", f"Exponent (Binary): {bin(exponent)[2:]}\n")
         self.output_text.insert("end", f"Mantissa: {mantissa}\n")
         self.output_text.insert("end", f"Binary: {binary}\n")
-        self.output_text.insert("end", f"hexdecimal: {hex}\n")
+        self.output_text.insert("end", f"Hexdecimal: {hex}\n")
 
     def save_result(self):
         result = self.output_text.get(1.0, "end").strip()
