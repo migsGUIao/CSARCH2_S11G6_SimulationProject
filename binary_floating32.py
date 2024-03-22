@@ -5,6 +5,8 @@
     • Output: (1) binary output with space between section (2) its hexadecimal equivalent (3)
     with option to output in text file.
 '''
+
+# get ready to learn chinese buddy
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
@@ -50,26 +52,42 @@ def getExponent(sNum, nExp):
             break
         ctr += 1
     
-    if dot > one:
+    if sNum[one+1] == dot:
+        adjust = 0
+        direction = "stay"
+    elif dot > one:
         adjust = dot - (one+1)
+        direction = "left"
     elif dot < one:
-        adjust = dot + one
+        adjust = dot - one
+        direction = "right"
 
-    return (nExp + adjust) + 127, one
+    return (nExp + adjust) + 127, one, direction
 
-def getMantissa(sNum, one):
+def getMantissa(sNum, one, direction):
     temp = []
-    ctr = one+1 # will only get the strings after the 1st occurence of 1
     fractional = 23
-    while ctr < len(sNum):
-        temp.append(sNum[ctr])
-        ctr += 1
 
-    temp.remove('.')
-    ctr = len(temp)
-    while ctr < fractional:
-        temp.append('0')
-        ctr += 1
+    if direction == "stay":
+        ctr = 0
+        while ctr < fractional:
+            temp.append('0')
+            ctr += 1
+    else:
+        ctr = one+1 # will only get the strings after the 1st occurence of 1
+
+        while ctr < len(sNum):
+            temp.append(sNum[ctr])
+            ctr += 1
+
+        if direction == "left":
+            temp.remove('.')
+
+        ctr = len(temp)
+        while ctr < fractional:
+            temp.append('0')
+            ctr += 1
+    
 
     # converts list to string
     convertedList = map(str, temp) 
@@ -78,11 +96,22 @@ def getMantissa(sNum, one):
 
 def joinValues(sign, exponent, mantissa):
     temp = []
+    expSize = 8
+    
     s = str(sign)
+    z = ''
     e = str(bin(exponent)[2:])
     m = mantissa
+
+    zeroExtend = expSize-len(e)
+
+    ctr = 0
+    while ctr < zeroExtend:
+        z = ''.join([z, '0'])
+        ctr += 1
     
     temp.append(s)
+    temp.append(z)
     temp.append(e)
     temp.append(m)
     
@@ -191,10 +220,10 @@ def binToHex(answer):
     return hex
 
 def okSign(nSign):
-        if nSign == 0 or nSign == 1:
-            return True
-        else:
-            return False
+    if nSign == 0 or nSign == 1:
+        return True
+    else:
+        return False
     
 class IEEE754ConverterGUI(tk.Tk):
     def __init__(self):
@@ -248,24 +277,6 @@ class IEEE754ConverterGUI(tk.Tk):
             messagebox.showerror("Error", "Invalid input for base, sign, or exponent.")
             return
         
-        if sNum != '0.0':
-            exponent, one = getExponent(sNum, nExp)
-            mantissa = getMantissa(sNum, one)
-
-        # infinity
-        if nExp >= 127:
-            exponent = 255
-            mantissa = "00000000000000000000000"
-        
-        # denormalized
-        elif nExp < -126 and mantissa != "00000000000000000000000":
-            exponent = 00000000
-
-        # zero
-        elif sNum == 0.0:
-            exponent = 00000000
-            mantissa = "00000000000000000000000"
-
         
         if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
             pass
@@ -281,11 +292,33 @@ class IEEE754ConverterGUI(tk.Tk):
             else:    
                 messagebox.showerror("Error", "Invalid input.")
                 return
+        
+        exponent, one, direction = getExponent(sNum, nExp)
 
+        # infinity
+        if nExp >= 127:
+            exponent = 255
+            mantissa = "00000000000000000000000"
+        
+        # denormalized
+        elif nExp < -126:
+            exponent = 00000000
+            mantissa = getMantissa(sNum, one, direction)
+
+        # zero
+        elif sNum == '0.0':
+            exponent = 00000000
+            mantissa = "00000000000000000000000"
+
+        else:
+            mantissa = getMantissa(sNum, one, direction)
 
         
         # sNaN?
         # qNaN?
+            
+        if exponent > 255:
+            exponent = 255
         
         answer = joinValues(nSign, exponent, mantissa)
         hex = binToHex(answer)
