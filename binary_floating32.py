@@ -258,11 +258,11 @@ class IEEE754ConverterGUI(tk.Tk):
         self.geometry("400x400")
         
         # Inputs
-        tk.Label(self, text="Base (2 or 10):").pack()
+        tk.Label(self, text="Base (2 for Binary or 10 for Decimal):").pack()
         self.base_entry = tk.Entry(self)
         self.base_entry.pack()
 
-        tk.Label(self, text="Sign (0 or 1):").pack()
+        tk.Label(self, text="Sign (0 for Positive or 1 for Negative):").pack()
         self.sign_entry = tk.Entry(self)
         self.sign_entry.pack()
 
@@ -303,22 +303,13 @@ class IEEE754ConverterGUI(tk.Tk):
             messagebox.showerror("Error", "Invalid input for base, sign, or exponent.")
             return
         
-        if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
-            pass
-        elif nBase == 10 and okFormat and okSign(nSign):
-            sNum = decToBin(sNum)
-        else:
-            messagebox.showerror("Error", "Invalid input.")
-            return
-
-
         if sNum != '0.0':
             exponent, one = getExponent(sNum, nExp)
             mantissa = getMantissa(sNum, one)
 
         # infinity
         if nExp >= 127:
-            exponent = 11111111
+            exponent = 255
             mantissa = "00000000000000000000000"
         
         # denormalized
@@ -326,10 +317,28 @@ class IEEE754ConverterGUI(tk.Tk):
             exponent = 00000000
 
         # zero
-        elif sNum == '0.0':
+        elif sNum == 0.0:
             exponent = 00000000
             mantissa = "00000000000000000000000"
 
+        
+        if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
+            pass
+        elif nBase == 10 and okFormat and okSign(nSign):
+            sNum = decToBin(sNum)
+        else:
+            if nBase != 2 or nBase != 10:
+                messagebox.showerror("Error", "Invalid input.\nInput 2 for the input to be read as Binary \nInput 10 for the input to be read as Decimal")
+                return
+            elif nSign != 0 or nSign != 1:
+                messagebox.showerror("Error", "Invalid input.\nInput 0 for the input to be read as Positive \nInput 1 for the input to be read as Negative")
+                return
+            else:    
+                messagebox.showerror("Error", "Invalid input.")
+                return
+
+
+        
         # sNaN?
         # qNaN?
         
@@ -344,7 +353,8 @@ class IEEE754ConverterGUI(tk.Tk):
         self.output_text.insert("end", f"Exponent (Decimal): {exponent}\n")
         self.output_text.insert("end", f"Exponent (Binary): {bin(exponent)[2:]}\n")
         self.output_text.insert("end", f"Mantissa: {mantissa}\n")
-        self.output_text.insert("end", f"Binary: {binary}\n")
+        #self.output_text.insert("end", f"Binary: {binary}\n")
+        self.output_text.insert("end", f"Binary: {sign} | {bin(exponent)[2:]} | {mantissa}\n")
         self.output_text.insert("end", f"Hexdecimal: {hex}\n")
 
     def save_result(self):
