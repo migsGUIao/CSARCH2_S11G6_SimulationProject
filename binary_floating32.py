@@ -344,7 +344,8 @@ class IEEE754ConverterGUI(tk.Tk):
         self.output_text.insert("end", f"Exponent (Decimal): {exponent}\n")
         self.output_text.insert("end", f"Exponent (Binary): {bin(exponent)[2:]}\n")
         self.output_text.insert("end", f"Mantissa: {mantissa}\n")
-        self.output_text.insert("end", f"Binary: {binary}\n")
+        #self.output_text.insert("end", f"Binary: {binary}\n")
+        self.output_text.insert("end", f"Binary: {sign} | {bin(exponent)[2:]} | {mantissa}\n")
         self.output_text.insert("end", f"Hexdecimal: {hex}\n")
 
     def save_result(self):
