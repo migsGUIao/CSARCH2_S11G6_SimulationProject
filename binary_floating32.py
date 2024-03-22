@@ -284,12 +284,25 @@ class IEEE754ConverterGUI(tk.Tk):
         self.output_text.pack()
     
     def convert(self):
-        nBase = int(self.base_entry.get())
-        nSign = int(self.sign_entry.get())
+        nBase = self.base_entry.get()
+        nSign = self.sign_entry.get()
         sNum = self.num_entry.get()
-        nExp = int(self.exp_entry.get())
+        nExp = self.exp_entry.get()
         okFormat, sNum = checkFormat(sNum)
 
+        if not nBase or not nSign or not sNum or not nExp:
+            messagebox.showerror("Error", "Please fill in all the fields.")
+            return
+
+        # Convert inputs to integers
+        try:
+            nBase = int(nBase)
+            nSign = int(nSign)
+            nExp = int(nExp)
+        except ValueError:
+            messagebox.showerror("Error", "Invalid input for base, sign, or exponent.")
+            return
+        
         if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
             pass
         elif nBase == 10 and okFormat and okSign(nSign):
