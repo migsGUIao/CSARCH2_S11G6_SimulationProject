@@ -14,9 +14,12 @@ from tkinter.scrolledtext import ScrolledText
 def checkFormat(sNum):
     ctr = 0
     dot = 0
+    one = 0
     while ctr < len(sNum):
         if sNum[ctr] == '.':
             dot += 1
+        if sNum[ctr] == '1':
+            one += 1
         if dot > 1:
             return False, sNum
         ctr += 1
@@ -32,6 +35,9 @@ def checkFormat(sNum):
     elif dot == 1 and sNum.index('.') == len(sNum)-1:
         sNum = ''.join([sNum, '0'])
 
+    elif one == 0:
+        sNum = '0.0'
+        
     return True, sNum
 
 def checkBinary(sNum):
@@ -45,7 +51,6 @@ def checkBinary(sNum):
 
 def getExponent(sNum, nExp):
     dot = sNum.index('.')
-    one = 0
     ctr = 0
     while ctr < len(sNum):
         if sNum[ctr] == '1':
@@ -299,7 +304,7 @@ class IEEE754ConverterGUI(tk.Tk):
         # infinity
         if nExp >= 127:
             exponent = 255
-            mantissa = "0" * 23
+            mantissa = "0" * 23 
         
         # denormalized
         elif nExp < -126:
@@ -307,7 +312,7 @@ class IEEE754ConverterGUI(tk.Tk):
             mantissa = getMantissa(sNum, one, direction)
 
         # zero
-        elif one == 0:
+        elif sNum == '0.0':
             exponent = 0
             mantissa = "0" * 23
 
