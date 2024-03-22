@@ -45,6 +45,7 @@ def checkBinary(sNum):
 
 def getExponent(sNum, nExp):
     dot = sNum.index('.')
+    one = 0
     ctr = 0
     while ctr < len(sNum):
         if sNum[ctr] == '1':
@@ -298,17 +299,17 @@ class IEEE754ConverterGUI(tk.Tk):
         # infinity
         if nExp >= 127:
             exponent = 255
-            mantissa = "00000000000000000000000"
+            mantissa = "0" * 23
         
         # denormalized
         elif nExp < -126:
-            exponent = 00000000
+            exponent = 0
             mantissa = getMantissa(sNum, one, direction)
 
         # zero
-        elif sNum == '0.0':
-            exponent = 00000000
-            mantissa = "00000000000000000000000"
+        elif one == 0:
+            exponent = 0
+            mantissa = "0" * 23
 
         else:
             mantissa = getMantissa(sNum, one, direction)
