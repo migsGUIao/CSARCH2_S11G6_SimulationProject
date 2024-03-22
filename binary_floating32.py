@@ -37,7 +37,7 @@ def checkFormat(sNum):
 
     elif one == 0:
         sNum = '0.0'
-        
+
     return True, sNum
 
 def checkBinary(sNum):
@@ -299,8 +299,7 @@ class IEEE754ConverterGUI(tk.Tk):
                 messagebox.showerror("Error", "Invalid input.")
                 return
         
-        exponent, one, direction = getExponent(sNum, nExp)
-
+        
         # infinity
         if nExp >= 127:
             exponent = 255
@@ -317,6 +316,7 @@ class IEEE754ConverterGUI(tk.Tk):
             mantissa = "0" * 23
 
         else:
+            exponent, one, direction = getExponent(sNum, nExp)
             mantissa = getMantissa(sNum, one, direction)
 
         
