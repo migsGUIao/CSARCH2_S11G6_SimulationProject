@@ -51,16 +51,16 @@ def getExponent(sNum, nExp):
             one = ctr
             break
         ctr += 1
-    
-    if sNum[one+1] == dot:
-        adjust = 0
-        direction = "stay"
-    elif dot > one:
+   
+    if dot > one:
         adjust = dot - (one+1)
         direction = "left"
     elif dot < one:
         adjust = dot - one
         direction = "right"
+    elif sNum[one+1] == dot:
+        adjust = 0
+        direction = "stay"
 
     return (nExp + adjust) + 127, one, direction
 
