@@ -190,6 +190,12 @@ def binToHex(answer):
 
     return hex
 
+def okSign(nSign):
+        if nSign == 0 or nSign == 1:
+            return True
+        else:
+            return False
+
 # if __name__ == '__main__':
 #     print("\n--------------------------------------------------------")
 #     print("Welcome to IEEE-754 Binary-32 floating point converter!")
@@ -276,7 +282,7 @@ class IEEE754ConverterGUI(tk.Tk):
         tk.Label(self, text="Output:").pack()
         self.output_text = ScrolledText(self, height=7)
         self.output_text.pack()
-
+    
     def convert(self):
         nBase = int(self.base_entry.get())
         nSign = int(self.sign_entry.get())
@@ -284,9 +290,9 @@ class IEEE754ConverterGUI(tk.Tk):
         nExp = int(self.exp_entry.get())
         okFormat, sNum = checkFormat(sNum)
 
-        if nBase == 2 and checkBinary(sNum) and okFormat:
+        if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
             pass
-        elif nBase == 10 and okFormat:
+        elif nBase == 10 and okFormat and okSign(nSign):
             sNum = decToBin(sNum)
         else:
             messagebox.showerror("Error", "Invalid input.")
