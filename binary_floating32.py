@@ -301,12 +301,12 @@ class IEEE754ConverterGUI(tk.Tk):
         
         
         # infinity
-        if nExp >= 127:
+        if nExp >= 127 and sNum != '0.0':
             exponent = 255
             mantissa = "0" * 23 
         
         # denormalized
-        elif nExp < -126:
+        elif nExp < -126 and sNum != '0.0':
             exponent = 0
             mantissa = getMantissa(sNum, one, direction)
 
