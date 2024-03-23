@@ -6,8 +6,8 @@
     with option to output in text file.
 '''
 
-# get ready to learn chinese buddy
 import tkinter as tk
+import time
 from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
 
@@ -140,6 +140,9 @@ def joinValues(sign, exponent, mantissa):
 
 #Converts decimal significand to binary
 def decToBin(sNum):
+    # timeout for 5 seconds if loop doesn't stop
+    timeout = time.time() + 5
+
     # separate whole and fractional numbers
     dot = sNum.index('.')
     whole = sNum[:dot]
@@ -147,6 +150,7 @@ def decToBin(sNum):
 
     # whole number converted to binary
     bWhole = bin(int(whole))[2:]
+    binary = ''
   
     # get number of decimal places
     dPlaces = str(len(fractional))
@@ -178,6 +182,9 @@ def decToBin(sNum):
         if checker == 0:
             break
 
+        if time.time() > timeout:
+            return binary, False
+
     # append '.' at the end of whole number
     bWhole = ''.join([bWhole, '.'])
 
@@ -188,7 +195,7 @@ def decToBin(sNum):
     # assemble binary whole and fractional
     binary = ''.join([bWhole, bFractional])
     
-    return binary
+    return binary, True
 
 #Converts final answer to hex
 def binToHex(answer):
@@ -315,7 +322,10 @@ class IEEE754ConverterGUI(tk.Tk):
         if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
             pass
         elif nBase == 10 and checkDecimal(sNum) and okFormat and okSign(nSign):
-            sNum = decToBin(sNum)
+            sNum, okConversion = decToBin(sNum)
+            if not okConversion:
+                messagebox.showerror("Error", "Decimal to Binary conversion unsuccessful")
+                return
         else:
             if nSign != 0 and nSign != 1:
                 messagebox.showerror("Error", "Invalid input.\nInput 0 for the input to be read as Positive \nInput 1 for the input to be read as Negative")
@@ -323,12 +333,14 @@ class IEEE754ConverterGUI(tk.Tk):
         
         # NaN
         if nBase == 2 and not checkBinary(sNum):
+            exponent, one, direction = getExponent(sNum, nExp)
             exponent = 255
-            mantissa = "0" * 23
+            mantissa = getMantissa(sNum, one, direction)
 
-        elif nBase == 2 and not checkDecimal(sNum):
+        elif nBase == 10 and not checkDecimal(sNum):
+            exponent, one, direction = getExponent(sNum, nExp)
             exponent = 255
-            mantissa = "0" * 23
+            mantissa = getMantissa(sNum, one, direction)
 
         # infinity
         elif nExp > 127 and sNum != '0.0':
