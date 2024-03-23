@@ -367,6 +367,14 @@ class IEEE754ConverterGUI(tk.Tk):
                 messagebox.showerror("Error", "Invalid input. Try again!\n\nInput 2 for binary \nInput 10 for decimal")
                 return
         
+        # if nBase == 2 and not checkBinary(sNum):
+        #     exponent = 255
+        #     mantissa = "1" + "0" * 22
+
+        # elif nBase == 10 and not checkDecimal(sNum):
+        #     exponent = 255
+        #     mantissa = "1" + "0" * 22
+        
         # NaN
         if nBase == 2 and not checkBinary(sNum):
             exponent, one, direction = getExponent(sNum, nExp)
