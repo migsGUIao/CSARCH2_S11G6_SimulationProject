@@ -1,4 +1,5 @@
 ## CSARCH2 Simulation Project: IEEE-754 Binary-32 floating point converter
+### Professor: Mr. Roger Luis Uy
 ***
 
 ### Example of our GUI:
