@@ -16,12 +16,14 @@ def checkFormat(sNum):
     #If input has more than 1 decimal, invalidate
     ctr = 0
     dot = 0
-
+    zeros = 0
     while ctr < len(sNum):
         if sNum[ctr] == '.':
             dot += 1
         if dot > 1:
             return False, sNum
+        if sNum[ctr] == '0':
+            zeros += 1
         ctr += 1
 
     # if user doesn't input decimal point,
@@ -34,24 +36,23 @@ def checkFormat(sNum):
     # then add one 0
     elif dot == 1 and sNum.index('.') == len(sNum)-1:
         sNum = ''.join([sNum, '0'])
+    
+    # if input is all 0s
+    # return standard "0.0"
+    elif zeros+1 == len(sNum):
+        return True, "0.0"
 
     return True, sNum
 
 #Checks if significand is in binary
 def checkBinary(sNum):
     ctr = 0
-    one = 0
     while ctr < len(sNum):
         if sNum[ctr] != '0' and sNum[ctr] != '1' and sNum[ctr] != '.':
             return False
-        if sNum[ctr] == '1':
-            one += 1
         ctr += 1
 
-    if one == 0:
-        sNum = '0.0'
-
-    return True, sNum
+    return True
 
 #Computes for exponent field
 def getExponent(sNum, nExp):
@@ -72,8 +73,13 @@ def getExponent(sNum, nExp):
     elif sNum[one+1] == dot:
         adjust = 0
         direction = "stay"
+    
+    exponent = (nExp + adjust) + 127
 
-    return (nExp + adjust) + 127, one, direction
+    if nExp < -126:
+        exponent = 0
+
+    return exponent, one, direction
 
 #Computes for mantissa field
 def getMantissa(sNum, one, direction):
@@ -109,7 +115,6 @@ def getMantissa(sNum, one, direction):
 #Combines fields together for final answer
 def joinValues(sign, exponent, mantissa):
     temp = []
-    expSize = 8
     
     s = str(sign)
     e = str(bin(exponent)[2:]).rjust(8, '0') #if exponent in binary is not 8-bit, it is zero-extended
@@ -297,11 +302,9 @@ class IEEE754ConverterGUI(tk.Tk):
             messagebox.showerror("Error", "Invalid input for base, sign, or exponent.")
             return
         
-        
-        if nBase == 2 and okFormat and okSign(nSign):
-            okBinary, sNum = checkBinary(sNum)
-            if not okBinary:
-                messagebox.showerror("Error", "Invalid input.\nEnter 0s and 1s only")
+
+        if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
+            pass
         elif nBase == 10 and okFormat and okSign(nSign):
             sNum = decToBin(sNum)
         else:
@@ -311,18 +314,20 @@ class IEEE754ConverterGUI(tk.Tk):
             elif nSign != 0 or nSign != 1:
                 messagebox.showerror("Error", "Invalid input.\nInput 0 for the input to be read as Positive \nInput 1 for the input to be read as Negative")
                 return
+            elif not checkBinary(sNum):
+                messagebox.showerror("Error", "Invalid input.\nEnter 0s and 1s only")
             else:    
                 messagebox.showerror("Error", "Invalid input.")
                 return
         
         # infinity
-        if nExp >= 127 and sNum != '0.0':
+        if nExp > 127 and sNum != '0.0':
             exponent = 255
             mantissa = "0" * 23 
         
         # denormalized
         elif nExp < -126 and sNum != '0.0':
-            exponent = 0
+            exponent, one, direction = getExponent(sNum, nExp)
             mantissa = getMantissa(sNum, one, direction)
 
         # zero
@@ -336,7 +341,8 @@ class IEEE754ConverterGUI(tk.Tk):
 
         
         # NaN (sNaN? & qNaN?)
-            
+        
+        # prevents out of bounds for infinity
         if exponent > 255:
             exponent = 255
         
