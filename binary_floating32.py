@@ -359,6 +359,7 @@ class IEEE754ConverterGUI(tk.Tk):
             exponent = 0
             mantissa = "0" * 23
 
+        # normal 
         else:
             exponent, one, direction = getExponent(sNum, nExp)
             mantissa = getMantissa(sNum, one, direction)
