@@ -1,13 +1,13 @@
 ## CSARCH2 Simulation Project: IEEE-754 Binary-32 floating point converter
 ***
 
-Example of our GUI:
+### Example of our GUI:
 
 
 ![GUI Example](gui.PNG "GUI Example Image")
 
 
-How to run in command prompt:
+### How to run in command prompt:
 1. Navigate to the project directory and have Python Installed.
 
    cd path/to/project
@@ -15,7 +15,7 @@ How to run in command prompt:
    
    python binary_floating32.py
 
-How to clone the repository:
+### How to clone the repository:
 1. Navigate to the folder you want to clone.
    
    cd path/to/your/folder
