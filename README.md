@@ -15,4 +15,6 @@ TAINO, Ryan Nicholas A.
 TASARRA, Marc Lowell Anthony
 
 GUI (base 2, sign 0, input 4.0, exponent 0)
+
+
 ![GUI Example](gui.PNG "GUI Example Image")
