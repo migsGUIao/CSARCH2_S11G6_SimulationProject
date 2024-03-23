@@ -115,7 +115,6 @@ def joinValues(sign, exponent, mantissa):
     e = str(bin(exponent)[2:]).rjust(8, '0') #if exponent in binary is not 8-bit, it is zero-extended
     m = mantissa
     temp.append(s)
-    temp.append(z)
     temp.append(e)
     temp.append(m)
     
