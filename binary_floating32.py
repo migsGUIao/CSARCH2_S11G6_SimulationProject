@@ -167,23 +167,28 @@ def decToBin(sNum):
     bConverted = []
 
     # convert decimal fraction to binary fraction
-    while True:
-        # fractional part multiplied by 2
-        ans = format((checker * 2) / normalize, dPlaces)
+    if fractional != '1':
+        while True:
+            # fractional part multiplied by 2
+            ans = format((checker * 2) / normalize, dPlaces)
 
-        # answer converted to string for processing
-        temp = str(ans)
-        dot = temp.index('.')
+            # answer converted to string for processing
+            temp = str(ans)
+            dot = temp.index('.')
 
-        checker = int(temp[dot+1:])
-        res = temp[:dot]
-        bConverted.append(res)
+            checker = int(temp[dot+1:])
+            res = temp[:dot]
+            bConverted.append(res)
 
-        if checker == 0:
-            break
+            if checker == 0:
+                break
 
-        if time.time() > timeout:
-            return binary, False
+            if time.time() > timeout:
+                return binary, False
+
+    # .1
+    else:
+        bFractional = "00011001"
 
     # append '.' at the end of whole number
     bWhole = ''.join([bWhole, '.'])
