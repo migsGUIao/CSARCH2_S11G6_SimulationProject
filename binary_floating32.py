@@ -54,6 +54,15 @@ def checkBinary(sNum):
 
     return True
 
+def checkDecimal(sNum):
+    ctr = 0
+    while ctr < len(sNum):
+        if sNum[ctr] != '0' and sNum[ctr] != '1' and sNum[ctr] != '2' and sNum[ctr] != '3' and sNum[ctr] != '4' and sNum[ctr] != '5' and sNum[ctr] != '6' and sNum[ctr] != '7' and sNum[ctr] != '8' and sNum[ctr] != '9' and sNum[ctr] != '.':
+            return False
+        ctr += 1
+
+    return True
+
 #Computes for exponent field
 def getExponent(sNum, nExp):
     dot = sNum.index('.')
@@ -301,28 +310,28 @@ class IEEE754ConverterGUI(tk.Tk):
         except ValueError:
             messagebox.showerror("Error", "Invalid input for base, sign, or exponent.")
             return
-        
+
 
         if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
             pass
-        elif nBase == 10 and okFormat and okSign(nSign):
+        elif nBase == 10 and checkDecimal(sNum) and okFormat and okSign(nSign):
             sNum = decToBin(sNum)
         else:
-            if nBase != 2 or nBase != 10:
-                messagebox.showerror("Error", "Invalid input.\nInput 2 for the input to be read as Binary \nInput 10 for the input to be read as Decimal")
-                return
-            elif nSign != 0 or nSign != 1:
+            if nSign != 0 and nSign != 1:
                 messagebox.showerror("Error", "Invalid input.\nInput 0 for the input to be read as Positive \nInput 1 for the input to be read as Negative")
                 return
-            elif not checkBinary(sNum):
-                messagebox.showerror("Error", "Invalid input.\nEnter 0s and 1s only")
-            else:    
-                messagebox.showerror("Error", "Invalid input.")
-                return
         
+        # NaN
+        if nBase == 2 and not checkBinary(sNum):
+            exponent = 255
+            mantissa = "0" * 23
+
+        elif nBase == 2 and not checkDecimal(sNum):
+            exponent = 255
+            mantissa = "0" * 23
 
         # infinity
-        if nExp > 127 and sNum != '0.0':
+        elif nExp > 127 and sNum != '0.0':
             exponent = 255
             mantissa = "0" * 23 
         
@@ -343,10 +352,6 @@ class IEEE754ConverterGUI(tk.Tk):
             mantissa = getMantissa(sNum, one, direction)
             if exponent > 255:
                 messagebox.showerror("Error", "Exponent exceeded 8 bits.")
-
-        
-        # NaN (sNaN? & qNaN?)
-        
         
         
         answer, fSign, fExp, fMant = joinValues(nSign, exponent, mantissa)
