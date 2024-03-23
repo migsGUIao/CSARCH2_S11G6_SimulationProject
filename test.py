@@ -1,17 +1,3 @@
-
-#CURRENT ERROR MESSAGE FOR TEST CASE 3#
-# Exception in Tkinter callback
-# Traceback (most recent call last):
-#   File "D:\IDE\Python\Lib\tkinter\__init__.py", line 1967, in __call__
-#     return self.func(*args)
-#            ^^^^^^^^^^^^^^^^
-#   File "d:\College\Term 2 2023-2024\CSARCH2\CSARCH2_S11G6_SimulationProject\binary_floating32.py", line 270, in convert
-#     mantissa = getMantissa(sNum, one)
-#                ^^^^^^^^^^^^^^^^^^^^^^
-#   File "d:\College\Term 2 2023-2024\CSARCH2\CSARCH2_S11G6_SimulationProject\binary_floating32.py", line 73, in getMantissa
-#     temp.remove('.')
-# ValueError: list.remove(x): x not in list
-
 # PLACED HERE TEMPORARILY
 # if __name__ == '__main__':
 #     print("\n--------------------------------------------------------")
