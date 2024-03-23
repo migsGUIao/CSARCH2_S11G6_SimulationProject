@@ -86,7 +86,9 @@ def getExponent(sNum, nExp):
     exponent = (nExp + adjust) + 127
 
     if nExp < -126:
-        exponent = 0
+        #exponent = 0
+        one = nExp - (-126)
+        exponent = nExp - one
 
     return exponent, one, direction
 
@@ -106,7 +108,7 @@ def getMantissa(sNum, one, direction):
         while ctr < len(sNum):
             temp.append(sNum[ctr])
             ctr += 1
-
+        
         if direction == "left":
             temp.remove('.')
 
@@ -119,6 +121,33 @@ def getMantissa(sNum, one, direction):
     # converts list to string
     convertedList = map(str, temp) 
     sNum = ''.join(convertedList)
+    return sNum
+
+def getMantissa4DeNorm(sNum, one):
+    decimal = sNum.index('.') #grabs index of decimal point
+
+    if one < 0: #convert to positive
+        one = (one * -2) + one
+
+    sNum = sNum.replace('.','') # removes old decimal point
+
+    if (decimal - one) < 0:
+        missingZero = one - 1
+        newLength = len(sNum) + missingZero
+        sNum = sNum.rjust(newLength, '0')
+
+    if one >= len(sNum):
+        missingZero = one - 1 # number of leading zeroes to add to
+        newLength = len(sNum) + missingZero
+        sNum = sNum.rjust(newLength, '0')
+
+    if len(sNum) < 23: #adds trailing zeroes until 23 bit
+        fillAmnt = 23 - len(sNum)
+        set = 0
+        while set < fillAmnt:
+            sNum = sNum + '0'
+            set += 1
+
     return sNum
 
 #Combines fields together for final answer
@@ -323,7 +352,6 @@ class IEEE754ConverterGUI(tk.Tk):
             messagebox.showerror("Error", "Invalid input for base, sign, or exponent.")
             return
 
-
         if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
             pass
         elif nBase == 10 and checkDecimal(sNum) and okFormat and okSign(nSign):
@@ -358,7 +386,8 @@ class IEEE754ConverterGUI(tk.Tk):
         # denormalized
         elif nExp < -126 and sNum != '0.0':
             exponent, one, direction = getExponent(sNum, nExp)
-            mantissa = getMantissa(sNum, one, direction)
+            exponent = 0
+            mantissa = getMantissa4DeNorm(sNum, one)
             if mantissa == "0" * 23:
                 messagebox.showerror("Error", "Mantissa should not be 0.")
                 return
@@ -390,7 +419,7 @@ class IEEE754ConverterGUI(tk.Tk):
         self.output_text.insert("end", f"Exponent (Binary): {fExp}\n")
         self.output_text.insert("end", f"Mantissa: {fMant}\n")
         self.output_text.insert("end", f"Binary: {fSign} | {fExp} | {fMant}\n")
-        self.output_text.insert("end", f"Hexdecimal: {hex}\n")
+        self.output_text.insert("end", f"Hexadecimal: {hex}\n")
 
     #Saves output to a text file
     def save_result(self):
