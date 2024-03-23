@@ -5,6 +5,8 @@
     • Output: (1) binary output with space between section (2) its hexadecimal equivalent (3)
     with option to output in text file.
 '''
+
+# get ready to learn chinese buddy
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
@@ -14,6 +16,7 @@ def checkFormat(sNum):
     #If input has more than 1 decimal, invalidate
     ctr = 0
     dot = 0
+
     while ctr < len(sNum):
         if sNum[ctr] == '.':
             dot += 1
@@ -37,12 +40,18 @@ def checkFormat(sNum):
 #Checks if significand is in binary
 def checkBinary(sNum):
     ctr = 0
+    one = 0
     while ctr < len(sNum):
         if sNum[ctr] != '0' and sNum[ctr] != '1' and sNum[ctr] != '.':
             return False
+        if sNum[ctr] == '1':
+            one += 1
         ctr += 1
 
-    return True
+    if one == 0:
+        sNum = '0.0'
+
+    return True, sNum
 
 #Computes for exponent field
 def getExponent(sNum, nExp):
@@ -53,28 +62,44 @@ def getExponent(sNum, nExp):
             one = ctr
             break
         ctr += 1
-    
+   
     if dot > one:
         adjust = dot - (one+1)
+        direction = "left"
     elif dot < one:
-        adjust = dot + one
+        adjust = dot - one
+        direction = "right"
+    elif sNum[one+1] == dot:
+        adjust = 0
+        direction = "stay"
 
-    return (nExp + adjust) + 127, one
+    return (nExp + adjust) + 127, one, direction
 
 #Computes for mantissa field
-def getMantissa(sNum, one):
+def getMantissa(sNum, one, direction):
     temp = []
-    ctr = one+1 # will only get the strings after the 1st occurence of 1
     fractional = 23
-    while ctr < len(sNum):
-        temp.append(sNum[ctr])
-        ctr += 1
 
-    temp.remove('.')
-    ctr = len(temp)
-    while ctr < fractional:
-        temp.append('0')
-        ctr += 1
+    if direction == "stay":
+        ctr = 0
+        while ctr < fractional:
+            temp.append('0')
+            ctr += 1
+    else:
+        ctr = one+1 # will only get the strings after the 1st occurence of 1
+
+        while ctr < len(sNum):
+            temp.append(sNum[ctr])
+            ctr += 1
+
+        if direction == "left":
+            temp.remove('.')
+
+        ctr = len(temp)
+        while ctr < fractional:
+            temp.append('0')
+            ctr += 1
+    
 
     # converts list to string
     convertedList = map(str, temp) 
@@ -84,10 +109,13 @@ def getMantissa(sNum, one):
 #Combines fields together for final answer
 def joinValues(sign, exponent, mantissa):
     temp = []
+    expSize = 8
+    
     s = str(sign)
     e = str(bin(exponent)[2:]).rjust(8, '0') #if exponent in binary is not 8-bit, it is zero-extended
     m = mantissa
     temp.append(s)
+    temp.append(z)
     temp.append(e)
     temp.append(m)
     
@@ -111,14 +139,20 @@ def decToBin(sNum):
     dPlaces = str(len(fractional))
     dPlaces = ''.join(['.', dPlaces])
     dPlaces = ''.join([dPlaces, 'f'])
+    
+    normalize = 1
+    ctr = 0
+    while ctr < len(fractional):
+        normalize *= 10
+        ctr += 1
 
-    # convert decimal fraction to binary fraction
     checker = int(fractional) 
     bConverted = []
 
+    # convert decimal fraction to binary fraction
     while True:
         # fractional part multiplied by 2
-        ans = format((checker / 100) * 2, dPlaces)
+        ans = format((checker * 2) / normalize, dPlaces)
 
         # answer converted to string for processing
         temp = str(ans)
@@ -199,10 +233,10 @@ def binToHex(answer):
     return hex
 
 def okSign(nSign):
-        if nSign == 0 or nSign == 1:
-            return True
-        else:
-            return False
+    if nSign == 0 or nSign == 1:
+        return True
+    else:
+        return False
     
 #COMMENTED CODE CHUNK TEMPORARILY MOVED TO test.py
         
@@ -264,26 +298,11 @@ class IEEE754ConverterGUI(tk.Tk):
             messagebox.showerror("Error", "Invalid input for base, sign, or exponent.")
             return
         
-        #Gets decimal form of computed exponent & computed mantissa
-        if sNum != '0.0':
-            exponent, one = getExponent(sNum, nExp)
-            mantissa = getMantissa(sNum, one)
         
-        # infinity
-        if nExp >= 127: 
-            exponent = 255
-            mantissa = "00000000000000000000000"
-        # denormalized
-        elif nExp < -126 and mantissa != "00000000000000000000000": 
-            exponent = 00000000
-        # zero
-        elif sNum == 0.0: 
-            exponent = 00000000
-            mantissa = "00000000000000000000000"
-        # NaN (sNaN? & qNaN?)
-        
-        if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
-            pass
+        if nBase == 2 and okFormat and okSign(nSign):
+            okBinary, sNum = checkBinary(sNum)
+            if not okBinary:
+                messagebox.showerror("Error", "Invalid input.\nEnter 0s and 1s only")
         elif nBase == 10 and okFormat and okSign(nSign):
             sNum = decToBin(sNum)
         else:
@@ -296,7 +315,32 @@ class IEEE754ConverterGUI(tk.Tk):
             else:    
                 messagebox.showerror("Error", "Invalid input.")
                 return
+        
+        # infinity
+        if nExp >= 127 and sNum != '0.0':
+            exponent = 255
+            mantissa = "0" * 23 
+        
+        # denormalized
+        elif nExp < -126 and sNum != '0.0':
+            exponent = 0
+            mantissa = getMantissa(sNum, one, direction)
 
+        # zero
+        elif sNum == '0.0':
+            exponent = 0
+            mantissa = "0" * 23
+
+        else:
+            exponent, one, direction = getExponent(sNum, nExp)
+            mantissa = getMantissa(sNum, one, direction)
+
+        
+        # NaN (sNaN? & qNaN?)
+            
+        if exponent > 255:
+            exponent = 255
+        
         answer, fSign, fExp, fMant = joinValues(nSign, exponent, mantissa)
         hex = binToHex(answer)
         self.show_result(fSign, exponent, fExp, fMant, hex)
