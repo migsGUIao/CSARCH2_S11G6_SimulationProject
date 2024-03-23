@@ -320,7 +320,6 @@ class IEEE754ConverterGUI(tk.Tk):
                 messagebox.showerror("Error", "Invalid input.")
                 return
         
-        normalCase = False
 
         # infinity
         if nExp > 127 and sNum != '0.0':
@@ -332,7 +331,7 @@ class IEEE754ConverterGUI(tk.Tk):
             exponent, one, direction = getExponent(sNum, nExp)
             mantissa = getMantissa(sNum, one, direction)
             if mantissa == "0" * 23:
-                normalCase = True
+                messagebox.showerror("Error", "Mantissa should not be 0.")
 
         # zero
         elif sNum == '0.0':
@@ -340,19 +339,15 @@ class IEEE754ConverterGUI(tk.Tk):
             mantissa = "0" * 23
 
         else:
-            normalCase = True
-        
-        # normal
-        if normalCase:
             exponent, one, direction = getExponent(sNum, nExp)
             mantissa = getMantissa(sNum, one, direction)
+            if exponent > 255:
+                messagebox.showerror("Error", "Exponent exceeded 8 bits.")
 
         
         # NaN (sNaN? & qNaN?)
         
-        # prevents out of bounds for infinity
-        if exponent > 255:
-            exponent = 255
+        
         
         answer, fSign, fExp, fMant = joinValues(nSign, exponent, mantissa)
         hex = binToHex(answer)
