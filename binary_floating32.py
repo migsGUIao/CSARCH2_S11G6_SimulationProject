@@ -328,7 +328,10 @@ class IEEE754ConverterGUI(tk.Tk):
                 return
         else:
             if nSign != 0 and nSign != 1:
-                messagebox.showerror("Error", "Invalid input.\nInput 0 for the input to be read as Positive \nInput 1 for the input to be read as Negative")
+                messagebox.showerror("Error", "Invalid input. Try again!\n\nInput 0 for the input to be read as positive (+)\n\nInput 1 for the input to be read as negative (-)")
+                return
+            elif nBase != 2 and nBase != 10:
+                messagebox.showerror("Error", "Invalid input. Try again!\n\nInput 2 for binary \nInput 10 for decimal")
                 return
         
         # NaN
