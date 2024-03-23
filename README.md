@@ -18,3 +18,17 @@ GUI (base 2, sign 0, input 4.0, exponent 0)
 
 
 ![GUI Example](gui.PNG "GUI Example Image")
+
+
+How to run in command prompt:
+1. Navigate to the project directory and have Python Installed.
+   cd path/to/project
+2. Then run the command below.
+   python binary_floating32.py
+
+How to clone the repository:
+1. Navigate to the folder you want to clone.
+   cd path/to/your/folder
+2. Run the command below to clone the repository.
+   git clone https://github.com/migsGUIao/CSARCH2_S11G6_SimulationProject.git
+   
