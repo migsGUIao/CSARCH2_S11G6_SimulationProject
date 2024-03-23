@@ -361,6 +361,7 @@ class IEEE754ConverterGUI(tk.Tk):
             mantissa = getMantissa(sNum, one, direction)
             if mantissa == "0" * 23:
                 messagebox.showerror("Error", "Mantissa should not be 0.")
+                return
 
         # zero
         elif sNum == '0.0':
@@ -373,6 +374,7 @@ class IEEE754ConverterGUI(tk.Tk):
             mantissa = getMantissa(sNum, one, direction)
             if exponent > 255:
                 messagebox.showerror("Error", "Exponent exceeded 8 bits.")
+                return
         
         
         answer, fSign, fExp, fMant = joinValues(nSign, exponent, mantissa)
