@@ -343,7 +343,7 @@ class IEEE754ConverterGUI(tk.Tk):
 
         #Error check for empty input fields
         if not nBase or not nSign or not sNum or not nExp:
-            messagebox.showerror("Error", "Please fill in all the fields.")
+            messagebox.showerror("Message", "Please fill in all the fields.")
             return
 
         # Convert inputs to integers
@@ -353,7 +353,7 @@ class IEEE754ConverterGUI(tk.Tk):
             nExp = int(nExp)
 
         except ValueError:
-            messagebox.showerror("Error", "Invalid input for base, sign, or exponent.")
+            messagebox.showerror("Message", "Invalid input for base, sign, or exponent.")
             return
 
         if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
@@ -361,14 +361,14 @@ class IEEE754ConverterGUI(tk.Tk):
         elif nBase == 10 and checkDecimal(sNum) and okFormat and okSign(nSign):
             sNum, okConversion = decToBin(sNum)
             if not okConversion:
-                messagebox.showerror("Error", "Decimal to Binary conversion unsuccessful")
+                messagebox.showerror("Message", "Decimal to Binary conversion unsuccessful")
                 return
         else:
             if nSign != 0 and nSign != 1:
-                messagebox.showerror("Error", "Invalid input. Try again!\n\nInput 0 for the input to be read as positive (+)\n\nInput 1 for the input to be read as negative (-)")
+                messagebox.showerror("Message", "Invalid input. Try again!\n\nInput 0 for the input to be read as positive (+)\n\nInput 1 for the input to be read as negative (-)")
                 return
             elif nBase != 2 and nBase != 10:
-                messagebox.showerror("Error", "Invalid input. Try again!\n\nInput 2 for binary \nInput 10 for decimal")
+                messagebox.showerror("Message", "Invalid input. Try again!\n\nInput 2 for binary \nInput 10 for decimal")
                 return
         
         
@@ -392,7 +392,7 @@ class IEEE754ConverterGUI(tk.Tk):
             exponent = 0
             mantissa = getMantissa4DeNorm(sNum, one)
             if mantissa == "0" * 23:
-                messagebox.showerror("Error", "Mantissa should not be 0.")
+                messagebox.showerror("Message", "Mantissa should not be 0.")
                 return
 
         # zero
@@ -405,7 +405,7 @@ class IEEE754ConverterGUI(tk.Tk):
             exponent, one, direction = getExponent(sNum, nExp)
             mantissa = getMantissa(sNum, one, direction)
             if exponent > 255:
-                messagebox.showerror("Error", "Exponent exceeded 8 bits.")
+                messagebox.showerror("Message", "Exponent exceeded 8 bits.")
                 return
         
         
