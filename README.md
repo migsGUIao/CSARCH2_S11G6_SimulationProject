@@ -1,6 +1,9 @@
 ## CSARCH2 Simulation Project: IEEE-754 Binary-32 floating point converter
+***
 
 Example of our GUI:
+
+
 ![GUI Example](gui.PNG "GUI Example Image")
 
 
