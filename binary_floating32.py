@@ -380,10 +380,8 @@ class IEEE754ConverterGUI(tk.Tk):
         self.output_text.delete(1.0, "end")
         self.output_text.insert("end", f"Sign: {fSign}\n")
         self.output_text.insert("end", f"Exponent (Decimal): {exponent}\n")
-        #self.output_text.insert("end", f"Exponent (Binary): {bin(exponent)[2:]}\n")
         self.output_text.insert("end", f"Exponent (Binary): {fExp}\n")
         self.output_text.insert("end", f"Mantissa: {fMant}\n")
-        #self.output_text.insert("end", f"Binary: {sign} | {bin(exponent)[2:]} | {mantissa}\n")
         self.output_text.insert("end", f"Binary: {fSign} | {fExp} | {fMant}\n")
         self.output_text.insert("end", f"Hexdecimal: {hex}\n")
 
