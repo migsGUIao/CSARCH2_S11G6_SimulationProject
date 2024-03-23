@@ -98,9 +98,13 @@ def getMantissa(sNum, one, direction):
     fractional = 23
 
     if direction == "stay":
+        dot = sNum.index('.')
         ctr = 0
         while ctr < fractional:
-            temp.append('0')
+            if dot+1 < len(sNum):
+                temp.append(sNum[ctr])
+            else:
+                temp.append('0')
             ctr += 1
     else:
         ctr = one+1 # will only get the strings after the 1st occurence of 1
