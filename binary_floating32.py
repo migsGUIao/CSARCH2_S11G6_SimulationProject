@@ -14,12 +14,10 @@ from tkinter.scrolledtext import ScrolledText
 def checkFormat(sNum):
     ctr = 0
     dot = 0
-    one = 0
+
     while ctr < len(sNum):
         if sNum[ctr] == '.':
             dot += 1
-        if sNum[ctr] == '1':
-            one += 1
         if dot > 1:
             return False, sNum
         ctr += 1
@@ -35,19 +33,22 @@ def checkFormat(sNum):
     elif dot == 1 and sNum.index('.') == len(sNum)-1:
         sNum = ''.join([sNum, '0'])
 
-    elif one == 0:
-        sNum = '0.0'
-
     return True, sNum
 
 def checkBinary(sNum):
     ctr = 0
+    one = 0
     while ctr < len(sNum):
         if sNum[ctr] != '0' and sNum[ctr] != '1' and sNum[ctr] != '.':
             return False
+        if sNum[ctr] == '1':
+            one += 1
         ctr += 1
 
-    return True
+    if one == 0:
+        sNum = '0.0'
+
+    return True, sNum
 
 def getExponent(sNum, nExp):
     dot = sNum.index('.')
@@ -139,14 +140,20 @@ def decToBin(sNum):
     dPlaces = str(len(fractional))
     dPlaces = ''.join(['.', dPlaces])
     dPlaces = ''.join([dPlaces, 'f'])
+    
+    normalize = 1
+    ctr = 0
+    while ctr < len(fractional):
+        normalize *= 10
+        ctr += 1
 
-    # convert decimal fraction to binary fraction
     checker = int(fractional) 
     bConverted = []
 
+    # convert decimal fraction to binary fraction
     while True:
         # fractional part multiplied by 2
-        ans = format((checker / 100) * 2, dPlaces)
+        ans = format((checker * 2) / normalize, dPlaces)
 
         # answer converted to string for processing
         temp = str(ans)
@@ -284,8 +291,10 @@ class IEEE754ConverterGUI(tk.Tk):
             return
         
         
-        if nBase == 2 and checkBinary(sNum) and okFormat and okSign(nSign):
-            pass
+        if nBase == 2 and okFormat and okSign(nSign):
+            okBinary, sNum = checkBinary(sNum)
+            if not okBinary:
+                messagebox.showerror("Error", "Invalid input.\nEnter 0s and 1s only")
         elif nBase == 10 and okFormat and okSign(nSign):
             sNum = decToBin(sNum)
         else:
@@ -299,7 +308,7 @@ class IEEE754ConverterGUI(tk.Tk):
                 messagebox.showerror("Error", "Invalid input.")
                 return
         
-        
+        print(sNum)
         # infinity
         if nExp >= 127 and sNum != '0.0':
             exponent = 255
