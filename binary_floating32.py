@@ -320,6 +320,8 @@ class IEEE754ConverterGUI(tk.Tk):
                 messagebox.showerror("Error", "Invalid input.")
                 return
         
+        normalCase = False
+
         # infinity
         if nExp > 127 and sNum != '0.0':
             exponent = 255
@@ -329,6 +331,8 @@ class IEEE754ConverterGUI(tk.Tk):
         elif nExp < -126 and sNum != '0.0':
             exponent, one, direction = getExponent(sNum, nExp)
             mantissa = getMantissa(sNum, one, direction)
+            if mantissa == "0" * 23:
+                normalCase = True
 
         # zero
         elif sNum == '0.0':
@@ -336,6 +340,10 @@ class IEEE754ConverterGUI(tk.Tk):
             mantissa = "0" * 23
 
         else:
+            normalCase = True
+        
+        # normal
+        if normalCase:
             exponent, one, direction = getExponent(sNum, nExp)
             mantissa = getMantissa(sNum, one, direction)
 
